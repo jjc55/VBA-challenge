@@ -1,0 +1,79 @@
+Attribute VB_Name = "Module1"
+
+Sub marketanalysis():
+
+   Dim i As Double
+    Dim lastRow As Double
+    Dim TotalStockVolume As Double
+    Dim nextrow As Double
+    Dim openingprice As Double
+    Dim closingprice As Double
+    Dim yearlychange As Double
+    Dim percentchange As Double
+    Dim ws As Worksheet
+    Dim greatestpercentincrease As Double
+    Dim greatestpercentdecrease As Double
+    Dim greatestTotalStockVolume As Double
+
+    
+For Each ws In Worksheets
+lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+    ws.Range("I1").Value = "Ticker"
+    ws.Range("J1").Value = "Yearly Change"
+    ws.Range("K1").Value = "Percent Change"
+    ws.Range("L1").Value = "Total Stock Volume"
+    ws.Range("P1").Value = "Ticker"
+    ws.Range("Q1").Value = "Value"
+    ws.Range("O2").Value = "Greatest % Increase"
+    ws.Range("O3").Value = "Greatest % Decrease"
+    ws.Range("O4").Value = "Greatest Total Volume"
+    nextrow = 2
+    TotalStockVolume = 0
+    greatestpercentincrease = 0
+    greatestpercentdecrease = 0
+    greatestTotalStockVolume = 0
+    
+    For i = 2 To lastRow
+        If ws.Cells(i, 1).Value <> ws.Cells(i - 1, 1).Value Then
+            TotalStockVolume = 0
+            openingprice = ws.Cells(i, 3).Value
+        End If
+        TotalStockVolume = TotalStockVolume + ws.Cells(i, 7).Value
+        If ws.Cells(i, 1).Value <> ws.Cells(i + 1, 1).Value Then
+            ws.Cells(nextrow, 9).Value = ws.Cells(i, 1)
+            ws.Cells(nextrow, 12).Value = TotalStockVolume
+            closingprice = ws.Cells(i, 6).Value
+            yearlychange = closingprice - openingprice
+            percentchange = yearlychange / openingprice
+            ws.Cells(nextrow, 10).Value = yearlychange
+                If ws.Cells(nextrow, 10).Value > 0 Then
+                    ws.Cells(nextrow, 10).Interior.Color = RGB(0, 255, 0)
+                Else
+                    ws.Cells(nextrow, 10).Interior.Color = RGB(255, 0, 0)
+                End If
+            ws.Cells(nextrow, 11).Value = percentchange
+            ws.Cells(nextrow, 11).NumberFormat = "0.00%"
+                           If greatestpercentincrease < ws.Cells(nextrow, 11).Value Then
+                    greatestpercentincrease = ws.Cells(nextrow, 11).Value
+              ws.Range("Q2").Value = greatestpercentincrease
+              ws.Range("Q2").NumberFormat = "0.00%"
+                   ws.Range("P2").Value = ws.Cells(nextrow, 9).Value
+                End If
+                 If greatestpercentdecrease > ws.Cells(nextrow, 11).Value Then
+                    greatestpercentdecrease = ws.Cells(nextrow, 11).Value
+                    ws.Range("Q3").Value = greatestpercentdecrease
+                    ws.Range("Q3").NumberFormat = "0.00%"
+                    ws.Range("P3").Value = ws.Cells(nextrow, 9).Value
+                End If
+                If greatestTotalStockVolume < ws.Cells(nextrow, 12).Value Then
+                    greatestTotalStockVolume = ws.Cells(nextrow, 12).Value
+              ws.Range("Q4").Value = greatestTotalStockVolume
+              ws.Range("Q4").NumberFormat = "0.00%"
+              ws.Range("P4").Value = ws.Cells(nextrow, 9).Value
+                End If
+            nextrow = nextrow + 1
+        End If
+    Next i
+Next ws
+End Sub
+
